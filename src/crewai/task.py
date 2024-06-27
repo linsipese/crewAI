@@ -351,3 +351,14 @@ class Task(BaseModel):
 
     def __repr__(self):
         return f"Task(description={self.description}, expected_output={self.expected_output})"
+
+
+class MutilAgentTask(Task):
+    def prompt(self) -> str:
+        """Prompt the task.
+
+        Returns:
+            Prompt of the task.
+        """
+        tasks_slices = [self.description]
+        return "\n".join(tasks_slices)

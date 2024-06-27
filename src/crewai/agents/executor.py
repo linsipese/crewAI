@@ -305,3 +305,94 @@ class CrewAgentExecutor(AgentExecutor):
         return input(
             self._i18n.slice("getting_input").format(final_answer=final_answer)
         )
+
+
+class MuiltAgentExecutor(AgentExecutor):
+    _i18n: I18N = I18N()
+    should_ask_for_human_input: bool = False
+    llm: Any = None
+    iterations: int = 0
+    task: Any = None
+    tools_description: str = ""
+    tools_names: str = ""
+    original_tools: List[Any] = []
+    crew_agent: Any = None
+    crew: Any = None
+    function_calling_llm: Any = None
+    request_within_rpm_limit: Any = None
+    tools_handler: Optional[InstanceOf[ToolsHandler]] = None
+    max_iterations: Optional[int] = 15
+    have_forced_answer: bool = False
+    force_answer_max_iterations: Optional[int] = None
+    step_callback: Optional[Any] = None
+
+    @root_validator()
+    def set_force_answer_max_iterations(cls, values: Dict) -> Dict:
+        values["force_answer_max_iterations"] = values["max_iterations"] - 2
+        return values
+
+    def _consume_next_step(
+        self, values
+    ) -> Union[AgentFinish, List[Tuple[AgentAction, str]]]:
+        if isinstance(values[-1], AgentFinish):
+            assert len(values) == 1
+            return values[-1]
+        else:
+            return [
+                (a.action, a.observation) for a in values if isinstance(a, AgentStep)
+            ]
+
+    def _take_next_step(
+        self,
+        name_to_tool_map: Dict[str, BaseTool],
+        color_mapping: Dict[str, str],
+        inputs: Dict[str, str],
+        intermediate_steps: List[Tuple[AgentAction, str]],
+        run_manager: Optional[CallbackManagerForChainRun] = None,
+    ) -> Union[AgentFinish, List[Tuple[AgentAction, str]]]:
+        return self._consume_next_step(
+            [
+                a
+                for a in self._iter_next_step(
+                    name_to_tool_map,
+                    color_mapping,
+                    inputs,
+                    intermediate_steps,
+                    run_manager,
+                )
+            ]
+        )
+    def _iter_next_step(
+        self,
+        name_to_tool_map: Dict[str, BaseTool],
+        color_mapping: Dict[str, str],
+        inputs: Dict[str, str],
+        intermediate_steps: List[Tuple[AgentAction, str]],
+        run_manager: Optional[CallbackManagerForChainRun] = None,
+    ) -> Iterator[Union[AgentFinish, AgentAction, AgentStep]]:
+        """Take a single step in the thought-action-observation loop.
+
+        Override this to take control of how the agent makes and acts on choices.
+        """
+        try:
+            intermediate_steps = self._prepare_intermediate_steps(intermediate_steps)
+
+            # Call the LLM to see what to do.
+            output = self.agent.plan(  # type: ignore #  Incompatible types in assignment (expression has type "AgentAction | AgentFinish | list[AgentAction]", variable has type "AgentAction")
+                intermediate_steps,
+                callbacks=run_manager.get_child() if run_manager else None,
+                **inputs,
+            )
+
+        except OutputParserException as e:
+            error = self._i18n.errors("output_parser_error")
+            output = AgentAction("_Exception", error, error)
+            yield AgentStep(action=output, observation=error)
+            return
+
+  
+        
+        yield AgentFinish(return_values ={"output":output},log=output)
+        return
+
+    

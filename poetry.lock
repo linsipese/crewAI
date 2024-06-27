@@ -896,13 +896,13 @@ cron = ["capturer (>=2.4)"]
 
 [[package]]
 name = "crewai-tools"
-version = "0.2.6"
+version = "0.3.0"
 description = "Set of tools for the crewAI framework"
 optional = false
 python-versions = "<=3.13,>=3.10"
 files = [
-    {file = "crewai_tools-0.2.6-py3-none-any.whl", hash = "sha256:b98ce2d40f545ee3c1bef6ba7ce07bfcecc0ebc8faf9db315016515bd709ab90"},
-    {file = "crewai_tools-0.2.6.tar.gz", hash = "sha256:f46d7c89aae927a4059297efc8f9d32d2200db225b9464c7d2a2134b4fc028d5"},
+    {file = "crewai_tools-0.3.0-py3-none-any.whl", hash = "sha256:3c51c97579c0e6ac2451035df36ee04899fb82d5deb2fd07bceff9818f196756"},
+    {file = "crewai_tools-0.3.0.tar.gz", hash = "sha256:f2be1fdf34e7f069c0a6fc76e0181e8c053ece1435f51da2efc01bd870e0cca8"},
 ]
 
 [package.dependencies]
@@ -6092,4 +6092,4 @@ tools = ["crewai-tools"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<=3.13"
-content-hash = "f1e540dc2b356a2592149e8ff2cc03540e4b0f99e1ce0521b5ff139d5e0ed105"
+content-hash = "f05ddc6bad8f1494d044c25ef50522081c93c1d19c000b70f65fd6b49887f19b"
