@@ -646,19 +646,19 @@ class ReflectionAgent(Agent):
         for _ in range(self.max_iter-1):
             generate_result = self.generate_executor.invoke(
                 {
-                    "massages": messages,
+                    "messages": messages,
                 }
             )["output"]
             messages.append(AIMessage(content=generate_result))
             reflect_result = self.reflection_executor.invoke(
                 {
-                    "massages": messages,
+                    "messages": messages,
                 }
             )["output"]
             messages.append(HumanMessage(content=reflect_result))
         result = self.generate_executor.invoke(
             {
-                "massages": messages,
+                "messages": messages,
             }
         )["output"]
         if self.max_rpm:
