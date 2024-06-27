@@ -515,7 +515,7 @@ class ReflectionAgent(Agent):
     generate_executor: InstanceOf[CrewAgentExecutor] = Field(
         default=None, description="An instance of the CrewAgentExecutor class."
     )
-    reflect_executor: InstanceOf[CrewAgentExecutor] = Field(
+    reflection_executor: InstanceOf[CrewAgentExecutor] = Field(
         default=None, description="An instance of the CrewAgentExecutor class."
     )
     crew: Any = Field(default=None, description="Crew to which the agent belongs.")
@@ -638,7 +638,7 @@ class ReflectionAgent(Agent):
 
         self.create_agent_executor()
         self.generate_executor.task = task
-        self.reflect_executor.task = task
+        self.reflection_executor.task = task
         request = HumanMessage(
             content="Write an essay on why the little prince is relevant in modern childhood"
         )
@@ -650,7 +650,7 @@ class ReflectionAgent(Agent):
                 }
             )["output"]
             messages.append(AIMessage(content=generate_result))
-            reflect_result = self.reflect_executor.invoke(
+            reflect_result = self.reflection_executor.invoke(
                 {
                     "massages": messages,
                 }
